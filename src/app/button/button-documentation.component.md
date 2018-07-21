@@ -3,12 +3,12 @@
 <!-- TOC -->
 
 - [Button Component](#button-component)
-    - [Intro](#intro)
-    - [Usage / API](#usage--api)
-        - [Defaults](#defaults)
-        - [For minimal functionality:](#for-minimal-functionality)
-        - [Optionals](#optionals)
-    - [Usage Examples](#usage-examples)
+  - [Intro](#intro)
+  - [Usage / API](#usage--api)
+    - [Defaults](#defaults)
+    - [For minimal functionality:](#for-minimal-functionality)
+    - [Optionals](#optionals)
+  - [Usage Examples](#usage-examples)
 
 <!-- /TOC -->
 
@@ -33,11 +33,13 @@ The button does not have a set width and is completely dependent upon the parent
 
 ### Optionals
 ***Optional states are set to false if no value is passed in to the instance of the component.*** 
+I'm using TS Accessors (get/set) instead of ngOnChanges bc I wanted more fine grain control to each input and deal with each change as it comes instead of all at once every time whether a change happend or not.
+
 For optional disabled state:
 - `isDisabled`: boolean, uses get-set and a private `_isDisable` variable to set css class. Do not directly access the private variable.
 
 For optional activated or selected state:
-This is used if there are a list of choices and you want to show the user that the option the button represents is selected. An example of this is in the order summary component.
+This is used if there are a list of choices and you want to show the user that the option the button represents is selected. An example of this is in the order summary component. Note the need for the ChangeDetectorRef, this is because after it emits being selected, the renderer needs to be manually updated to know that the value has changed to being selected and update the styling.
 - `isActivated`: boolean
 
 For optional submit functionality, which allows the user to press the `enter` key to continue:
@@ -53,10 +55,10 @@ For optional loading animation:
 ```html
 <!-- parent.component.html -->
 <!-- Bare minimum -->
-<app-button [buttonText]="textString" (buttonClick)="parentActionMethod()">
+<app-button [buttonText]="textString" (buttonClick)="parentActionMethod()"></app-button>
 
 <!-- The activated optional-->
-<app-button [isActivated]="someBooleanLogicResultVariable" (buttonClick)="parentActionMethod()">
+<app-button [isActivated]="someBooleanLogicResultVariable" (buttonClick)="parentActionMethod()"></app-button>
 
 <!-- A button that is disabled initially until some validation changes the variable and has the loader animation activated -->
 <app-button [buttonText]="textString"
@@ -64,6 +66,19 @@ For optional loading animation:
             [isDisabled]="disabledBooleanLogicResultVariable"
             [isLoading]="parentLoadingVariable"
             (buttonClick)="parentActionMethod()">
+</app-button>
+
+<!-- or if a series of options -->
+<div>
+  <ul>
+    <li *ngFor="let option of optionsList">
+      <app-button [buttonText]="option.buttonText" 
+                  [isActivated]="option.selected"
+                  (buttonClick)="optionsSelectHandler(optionsList, option))">
+      </app-button>
+    </li>
+  </ul>
+</div>
 ```
 
 ```js
@@ -82,4 +97,14 @@ parentActionMethod() {
     };
   })
 }
+
+  // or if you are using ngFor because you have a series of bubttons as options
+  // import and declare in constructor private ref: ChangeDetectorRef
+  optionsSelectHandler(optionsList: any[], selection: any): void {
+    optionsList.forEach(option => {
+      option.selected = option === selection ? true : false;
+      this.ref.markForCheck();
+    });
+    this.ref.detectChanges();
+  }
 ```
