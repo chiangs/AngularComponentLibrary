@@ -1,0 +1,36 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  background-color: #ff1744;
+  font-size: 20px;
+  font-family: sans-serif;
+  color: #eeeeee;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.viewContainer {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.section {
+  display: flex;
+  margin: 0 auto;
+  max-width: 100%;
+  text-align: center;
+}
+
+.column {
+  flex: 1 1 0px;
+}
+
+.menuItem {
+  cursor: pointer;
+}
